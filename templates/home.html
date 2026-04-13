@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SBI Loan Portal</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #f5f7fb;
+}
+
+/* MARQUEE */
+.marquee {
+    background: #ff9800;
+    color: white;
+    padding: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* NAVBAR */
+.navbar {
+    background: linear-gradient(to right, #0a2a66, #1c2c8c);
+    padding: 18px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+/* CUSTOM SVG LOGO */
+.logo-icon {
+    width: 42px;
+    height: 42px;
+    margin-right: 10px;
+}
+
+/* NAV LINKS */
+.nav-links a {
+    color: white;
+    margin-left: 20px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.nav-btn {
+    background: #ff9800;
+    padding: 8px 16px;
+    border-radius: 6px;
+}
+
+/* HERO */
+.hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 100px 80px;
+    background: linear-gradient(to right, #0a2a66, #1c2c8c);
+    color: white;
+}
+
+.hero-text {
+    max-width: 50%;
+}
+
+.hero h1 {
+    font-size: 52px;
+}
+
+.hero span {
+    color: #ff9800;
+}
+
+.hero p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+/* BUTTONS */
+.btn-main {
+    background: #ff9800;
+    color: white;
+    padding: 12px 22px;
+    border-radius: 6px;
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+.btn-outline {
+    border: 1px solid white;
+    padding: 12px 22px;
+    border-radius: 6px;
+    color: white;
+    text-decoration: none;
+}
+
+/* SECTION */
+.section {
+    padding: 70px;
+    text-align: center;
+}
+
+.cards {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    width: 240px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+/* HOVER ANIMATION */
+.card:hover {
+    transform: translateY(-10px) scale(1.03);
+}
+
+/* ICON ANIMATION */
+.card i {
+    color: #1c2c8c;
+    margin-bottom: 15px;
+    animation: float 2s ease-in-out infinite;
+}
+
+/* FLOAT ANIMATION */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0px); }
+}
+
+/* STATS */
+.stats {
+    display: flex;
+    justify-content: space-around;
+    background: #1c2c8c;
+    color: white;
+    padding: 50px;
+    flex-wrap: wrap;
+}
+
+/* CTA */
+.cta {
+    text-align: center;
+    padding: 80px;
+    background: linear-gradient(to right, #0a2a66, #1c2c8c);
+    color: white;
+}
+
+.cta button {
+    background: #ff9800;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 6px;
+    color: white;
+}
+
+/* FOOTER */
+.footer {
+    background: #0a2a66;
+    color: white;
+    padding: 40px;
+    text-align: center;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- MARQUEE -->
+<div class="marquee">
+<marquee>
+🚀 Demo SBI Loan Portal | Built for educational + real-world banking simulation | Secure • Fast • Reliable
+</marquee>
+</div>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">
+
+        <!-- CUSTOM BANK SVG LOGO -->
+        <svg class="logo-icon" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="45" fill="#00a2ff"/>
+            <circle cx="50" cy="65" r="20" fill="white"/>
+        </svg>
+
+        <h2>State Bank of India</h2>
+    </div>
+
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="#">Loans</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+        <a href="/admin" class="nav-btn">Admin</a>
+        <a href="/signup" class="nav-btn">Sign Up</a>
+        <a href="/login" class="nav-btn">Login</a>
+    </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-text">
+        <h1>Welcome to <span>SBI Loan Portal</span></h1>
+        <p>India’s most trusted banking partner for your financial needs</p>
+
+        <a href="/user-form" class="btn-main">Apply for Loan →</a>
+        <a href="#" class="btn-outline">Explore Loans</a>
+    </div>
+</div>
+
+<!-- LOANS -->
+<div class="section">
+    <h2>Loan Options for Every Need</h2>
+
+    <div class="cards">
+        <div class="card">
+            <i class="fa-solid fa-house fa-2x"></i>
+            <h3>Home Loan</h3>
+        </div>
+
+        <div class="card">
+            <i class="fa-solid fa-car fa-2x"></i>
+            <h3>Car Loan</h3>
+        </div>
+
+        <div class="card">
+            <i class="fa-solid fa-user fa-2x"></i>
+            <h3>Personal Loan</h3>
+        </div>
+
+        <div class="card">
+            <i class="fa-solid fa-graduation-cap fa-2x"></i>
+            <h3>Education Loan</h3>
+        </div>
+
+        <div class="card">
+            <i class="fa-solid fa-briefcase fa-2x"></i>
+            <h3>Business Loan</h3>
+        </div>
+    </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+    <div><h2>₹5000Cr+</h2><p>Loans Approved</p></div>
+    <div><h2>10M+</h2><p>Customers</p></div>
+    <div><h2>25+</h2><p>Years Trust</p></div>
+    <div><h2>99%</h2><p>Success Rate</p></div>
+</div>
+
+<!-- CTA -->
+<div class="cta">
+    <h2>Ready to apply for your loan?</h2>
+    <button onclick="window.location.href='/user-form'">Apply Now</button>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+    <p>© State Bank of India | Secure Banking Portal</p>
+</div>
+
+</body>
+</html>

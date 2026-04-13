@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login - SBI Loan Portal</title>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #1a237e, #0d47a1);
+}
+
+/* 🔴 FLOATING WARNING */
+.warning {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: #ffcc00;
+    color: black;
+    text-align: center;
+    padding: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 999;
+    animation: slide 12s linear infinite;
+}
+
+@keyframes slide {
+    0% {transform: translateX(100%);}
+    100% {transform: translateX(-100%);}
+}
+
+/* NAVBAR */
+.navbar {
+    background: #1a237e;
+    padding: 15px 40px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 35px;
+}
+
+.navbar h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navbar a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+.btn-login {
+    background: #ff9800;
+    padding: 8px 16px;
+    border-radius: 5px;
+}
+
+/* MAIN CONTAINER */
+.container {
+    max-width: 900px;
+    margin: 80px auto;
+    display: flex;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+}
+
+/* LEFT */
+.left {
+    flex: 1;
+    background: linear-gradient(to right, #1a237e, #0d47a1);
+    color: white;
+    padding: 40px;
+}
+
+/* RIGHT */
+.right {
+    flex: 1;
+    padding: 40px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* BUTTONS */
+.btn-main {
+    width: 100%;
+    background: #1a237e;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-outline {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid #1a237e;
+    background: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* CAPTCHA BOX */
+.captcha-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.captcha {
+    font-weight: bold;
+    font-size: 18px;
+    letter-spacing: 3px;
+    background: #eee;
+    padding: 8px 12px;
+    border-radius: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ⚠️ WARNING -->
+<div class="warning">
+⚠️ This is a DEMO banking interface created for academic purposes only.
+</div>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <h2>🏦 State Bank of India</h2>
+
+    <div>
+        <a href="/">Home</a>
+        <a href="/signup">Sign Up</a>
+        <a href="/logout">Logout</a>
+        <a href="/login" class="btn-login">Login</a>
+    </div>
+</div>
+
+<!-- LOGIN -->
+<div class="container">
+
+    <!-- LEFT -->
+    <div class="left">
+        <h2>Welcome Back to SBI</h2>
+        <p>Secure login to access your loan dashboard</p>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+        <h2>Sign In</h2>
+
+        <form method="POST" action="/login" onsubmit="return validateCaptcha()">
+
+            <input type="text" name="username" placeholder="Enter Username" required>
+
+            <input type="password" name="password" placeholder="Enter Password" required>
+
+            <!-- CAPTCHA -->
+            <div class="captcha-box">
+                <div class="captcha" id="captchaText"></div>
+                <button type="button" onclick="generateCaptcha()">🔄</button>
+            </div>
+
+            <input type="text" id="captchaInput" placeholder="Enter CAPTCHA" required>
+
+            <button type="submit" class="btn-main">
+                Login to My Account →
+            </button>
+
+        </form>
+
+        <button class="btn-outline" onclick="window.location.href='/signup'">
+            Create New Account
+        </button>
+
+    </div>
+
+</div>
+
+<!-- SCRIPT -->
+<script>
+let captcha = "";
+
+function generateCaptcha() {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    captcha = "";
+    for (let i = 0; i < 6; i++) {
+        captcha += chars[Math.floor(Math.random() * chars.length)];
+    }
+    document.getElementById("captchaText").innerText = captcha;
+}
+
+function validateCaptcha() {
+    const userInput = document.getElementById("captchaInput").value;
+    if (userInput !== captcha) {
+        alert("Invalid CAPTCHA ❌");
+        return false;
+    }
+    return true;
+}
+
+/* Generate on load */
+window.onload = generateCaptcha;
+</script>
+
+</body>
+</html>

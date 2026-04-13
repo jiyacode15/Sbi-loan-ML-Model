@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SBI Loan Application</title>
+<style>
+body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #eef2f7; }
+
+.navbar {
+    background: #1a237e;
+    color: white;
+    padding: 15px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.navbar h2 { font-size: 18px; font-weight: 700; }
+.navbar a { color: white; margin-left: 15px; text-decoration: none; font-weight: 600; font-size: 14px; }
+
+.container {
+    width: 90%;
+    max-width: 900px;
+    margin: 28px auto;
+    background: white;
+    padding: 32px;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+}
+
+.container > h2 { color: #1a237e; margin-bottom: 24px; font-size: 22px; }
+
+/* ---- Option Cards ---- */
+.option-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 8px; }
+.option-card {
+    background: #f5f7ff;
+    border: 2px solid #e3e8ff;
+    border-radius: 12px;
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a237e;
+}
+.option-card:hover { background: #1a237e; color: white; border-color: #1a237e; transform: translateY(-2px); }
+
+/* ---- Tabs ---- */
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 24px; border-bottom: 2px solid #e3e8ff; padding-bottom: 0; }
+.tab {
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    border-radius: 8px 8px 0 0;
+    transition: all .2s;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+}
+.tab.active { color: #1a237e; border-bottom-color: #1a237e; background: #f0f4ff; }
+.tab:hover:not(.active) { background: #f5f7fb; }
+
+.section { display: none; }
+.section.active { display: block; }
+.mainSection { display: none; }
+
+/* ---- Form fields ---- */
+label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin: 14px 0 5px; }
+input, select, textarea {
+    width: 100%; padding: 11px 14px;
+    border-radius: 8px; border: 1.5px solid #d1d5db;
+    font-size: 14px; font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color .2s;
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: #1a237e; box-shadow: 0 0 0 3px rgba(26,35,126,.08); }
+input[readonly] { background: #f9fafb; color: #64748b; }
+small { color: #ef4444; font-size: 11px; display: block; margin-top: 3px; }
+
+/* ---- Nav buttons ---- */
+.nav-buttons { display: flex; justify-content: space-between; margin-top: 28px; }
+.btn {
+    padding: 11px 24px; border: none; border-radius: 8px;
+    cursor: pointer; font-size: 13px; font-weight: 700;
+    transition: opacity .2s;
+}
+.btn:hover { opacity: .88; }
+.btn-primary { background: #1a237e; color: white; }
+.btn-secondary { background: #e3e8ff; color: #1a237e; }
+.btn-success { background: #16a34a; color: white; padding: 13px 32px; font-size: 15px; }
+
+.section-title { font-size: 17px; font-weight: 700; color: #1a237e; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 2px solid #eef2f7; }
+
+/* ---- View / Complaint ---- */
+.back-btn { margin-bottom: 20px; }
+
+.complaint-form input,
+.complaint-form textarea { margin-bottom: 10px; }
+
+/* ---- Progress ---- */
+.progress-bar { display: flex; gap: 6px; margin-bottom: 20px; }
+.progress-step {
+    flex: 1; height: 5px; border-radius: 4px;
+    background: #e3e8ff; transition: background .3s;
+}
+.progress-step.done { background: #1a237e; }
+
+/* ---- Submit overlay ---- */
+.submit-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.5); z-index: 9999;
+    justify-content: center; align-items: center;
+}
+.submit-overlay.show { display: flex; }
+.submit-box {
+    background: white; border-radius: 16px; padding: 48px 40px;
+    text-align: center; max-width: 420px;
+}
+.submit-box h3 { color: #16a34a; font-size: 22px; margin-bottom: 12px; }
+.submit-box p { color: #64748b; margin-bottom: 24px; }
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <h2>&#127974; State Bank of India</h2>
+  <div>
+    <a href="/">Home</a>
+    <a href="/dashboard">My Applications</a>
+    <a href="/logout">Logout</a>
+  </div>
+</div>
+
+<div class="container">
+  <h2>User Portal</h2>
+
+  <!-- Option selection screen -->
+  <div id="options">
+    <div class="option-grid">
+      <div class="option-card" onclick="showSection('view')">&#128196; View Applications</div>
+      <div class="option-card" onclick="showSection('form')">&#128221; Apply for Loan</div>
+      <div class="option-card" onclick="showSection('complaint')">&#9888; File Complaint</div>
+    </div>
+  </div>
+
+  <!-- ====== VIEW SECTION ====== -->
+  <div id="view" class="mainSection">
+    <button class="btn btn-secondary back-btn" onclick="goBack()">&#8592; Back</button>
+    <p style="color:#64748b;">Go to <a href="/dashboard" style="color:#1a237e;font-weight:600;">My Applications</a> to see all your submitted loan applications and their status.</p>
+  </div>
+
+  <!-- ====== LOAN APPLICATION FORM ====== -->
+  <div id="form" class="mainSection">
+    <button class="btn btn-secondary back-btn" onclick="goBack()">&#8592; Back</button>
+
+    <div class="progress-bar" id="progressBar">
+      <div class="progress-step" id="ps0"></div>
+      <div class="progress-step" id="ps1"></div>
+      <div class="progress-step" id="ps2"></div>
+      <div class="progress-step" id="ps3"></div>
+      <div class="progress-step" id="ps4"></div>
+      <div class="progress-step" id="ps5"></div>
+      <div class="progress-step" id="ps6"></div>
+      <div class="progress-step" id="ps7"></div>
+      <div class="progress-step" id="ps8"></div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" onclick="openTab(0)">Personal</div>
+      <div class="tab" onclick="openTab(1)">Education</div>
+      <div class="tab" onclick="openTab(2)">Family</div>
+      <div class="tab" onclick="openTab(3)">Vehicle</div>
+      <div class="tab" onclick="openTab(4)">Property</div>
+      <div class="tab" onclick="openTab(5)">Financial</div>
+      <div class="tab" onclick="openTab(6)">Loan</div>
+      <div class="tab" onclick="openTab(7)">Documents</div>
+      <div class="tab" onclick="openTab(8)">Bank</div>
+    </div>
+
+    <!-- The form POSTs to /submit-form with all required hidden + visible fields -->
+    <form method="POST" action="/submit-form" id="loanForm" enctype="multipart/form-data">
+
+      <!-- Hidden fields that collect data from all tabs before submit -->
+      <input type="hidden" name="income"          id="h_income">
+      <input type="hidden" name="loan"             id="h_loan">
+      <input type="hidden" name="age"              id="h_age">
+      <input type="hidden" name="employment_type"  id="h_employment_type">
+      <input type="hidden" name="credit_score"     id="h_credit_score">
+
+      <!-- TAB 0: PERSONAL -->
+      <div class="section active" id="tab0">
+        <div class="section-title">Personal Information</div>
+        <label>Full Name (as per Aadhaar) *</label>
+        <input id="fullName" placeholder="Enter full name" required>
+
+        <label>Date of Birth *</label>
+        <input type="date" id="dob" onchange="calcAge(this)" required>
+
+        <label>Age</label>
+        <input id="age" placeholder="Auto-calculated" readonly>
+
+        <label>Mobile Number *</label>
+        <input id="mobile" placeholder="10-digit mobile number" maxlength="10" pattern="[0-9]{10}" required>
+        <small id="mobileErr" style="display:none;">Enter valid 10-digit number</small>
+
+        <label>Email *</label>
+        <input type="email" id="email" placeholder="your@email.com" required>
+
+        <label>Marital Status *</label>
+        <select id="marital" onchange="toggleSpouse()">
+          <option value="">Select status</option>
+          <option>Single</option>
+          <option>Married</option>
+        </select>
+
+        <div id="spouseBox" style="display:none;">
+          <label>Spouse Name</label>
+          <input id="spouseName" placeholder="Spouse full name">
+          <label>Spouse Working?</label>
+          <select id="spouseWorking" onchange="toggleSpouseIncome()">
+            <option value="">Select</option>
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+          <div id="spouseIncomeBox" style="display:none;">
+            <label>Spouse Income Range</label>
+            <select id="spouseIncome">
+              <option>0-10K</option>
+              <option>10K-50K</option>
+              <option>50K-1L</option>
+              <option>1L+</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="nav-buttons">
+          <span></span>
+          <button type="button" class="btn btn-primary" onclick="openTab(1)">Next &#8594;</button>
+        </div>
+      </div>
+
+      <!-- TAB 1: EDUCATION -->
+      <div class="section" id="tab1">
+        <div class="section-title">Education</div>
+        <label>Highest Qualification *</label>
+        <select id="qualification" required>
+          <option value="">Select qualification</option>
+          <option>10th</option>
+          <option>12th</option>
+          <option>Graduate</option>
+          <option>Post Graduate</option>
+        </select>
+
+        <label>Upload Marksheet</label>
+        <input type="file" accept=".pdf,.jpg,.png">
+
+        <div class="nav-buttons">
+          <button type="button" class="btn btn-secondary" onclick="openTab(0)">&#8592; Previous</button>
+          <button type="button" class="btn btn-primary" onclick="openTab(2)">Next &#8594;</button>
+        </div>
+      </div>
+
+      <!-- TAB 2: FAMILY -->
+      <div class="section" id="tab2">
+        <div class="section-title">Family Details</div>
+        <label>Father Name</label>
+        <input id="fatherName" placeholder="Father's full name">
+        <label>Father Working?</label>
+        <select id="fatherWorking" onchange="toggleFather()">
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
+        </select>
+        <div id="fatherIncomeBox" style="display:none;">
+          <label>Father Income Range</label>
+          <select id="fatherIncome">
+            <option>0-10K</option><option>10K-50K</option><option>50K+</option>
+          </select>
+        </div>
+
+        <label>Mother Name</label>
+        <input id="motherName" placeholder="Mother's full name">
+        <label>Mother Working?</label>
+        <select id="motherWorking" onchange="toggleMother()">
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
+        </select>
+        <div id="motherIncomeBox" style="display:none;">
+          <label>Mother Income Range</label>
+          <select id="motherIncome">
+            <option>0-10K</option><option>10K-50K</option><option>50K+</option>
+          </select>
+        </div>
+
+        <label>Sibling Details</label>
+        <input id="siblings" placeholder="e.g. 1 brother, 2 sisters">
+
+        <div class="nav-buttons">
+          <button type="button" class="btn btn-secondary" onclick="openTab(1)">&#8592; Previous</button>
+          <button type="button" class="btn btn-primary" onclick="openTab(3)">Next &#8594;</button>
+        </div>
+      </div>
+
+      <!-- TAB 3: VEHICLE -->
+      <div class="section" id="tab3">
+        <div class="section-title">Vehicle Details</div>
+        <label>Do you own a Vehicle?</label>
+        <select id="ownVehicle" onchange="toggleVehicle()">
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
+        </select>
+        <div id="vehicleBox" style="display:none;">
+          <label>Vehicle Brand</label>
+          <select id="vehicleBrand" onchange="toggleBrand()">
+            <option>Honda</option><option>Hyundai</option><option>Tata</option>
+            <option>Mahindra</option><option>Maruti</option><option>Other</option>
+          </select>
+          <input id="otherBrand" placeholder="Enter brand name" style="display:none;margin-top:8px;">
+          <label>Vehicle Number</label>
+          <input id="vehicleNumber" placeholder="e.g. MH-12-AB-1234">
+          <label>Upload Driving License</label>
+          <input type="file" accept=".pdf,.jpg,.png">
+        </div>
+
+        <div class="nav-buttons">
+          <button type="button" class="btn btn-secondary" onclick="openTab(2)">&#8592; Previous</button>
+          <button type="button" class="btn btn-primary" onclick="openTab(4)">Next &#8594;</button>
+        </div>
+      </div>
+
+      <!-- TAB 4: PROPERTY -->
+      <div class="section" id="tab4">
+        <div class="section-title">Property Details</div>
+        <label>Do you own Property?</label>
+        <select id="ownProperty" onchange="toggleProperty()">
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
+        </select>
+        <div id="propertyBox" style="display:none;">
+          <label>Property Type</label>
+          <select id="propertyType">
+            <option>Flat</option><option>Bungalow</option><option>Land</option><option>Commercial</option>
+          </select>
+          <label>Estimated Value</label>
+          <select id="propertyValue">
+            <option>0-10L</option><option>10L-50L</option><option>50L-1Cr</option><option>1Cr+</option>
+          </select>
+          <label>Upload Electricity Bill *</label>
+          <input type="file" accept=".pdf,.jpg,.png">
+        </div>
+
+        <div class="nav-buttons">
+          <button type="button" class="btn btn-secondary" onclick="openTab(3)">&#8592; Previous</button>
+          <button type="button" class="btn btn-primary" onclick="openTab(5)">Next &#8594;</button>
+        </div>
+      </div>
+
+      <!-- TAB 5: FINANCIAL — collects income -->
+      <div class="section" id="tab5">
+        <div class="section-title">Financial Information</div>
+        <label>Monthly Income (&#8377;) *</label>
+        <input type="number" id="incomeInput" placeholder="e.g. 45000" min="0" required>
+        <small>Enter your actual monthly take-home salary in rupees</small>
+
+        <label>Employment Type *</label>
+        <select id="employmentInput" required>
+          <option value="">Select employment type</option>
+          <option value="Salaried">Salaried</option>
+          <option value="Self-Employed">Self-Employed</option>
+          <option value="Government">Government</option>
+          <option value="Business">Business</option>
+          <option value="Freelancer">Freelancer</option>
+        </select>
+
+        <div class="nav-buttons">
+          <button type="button" class="btn btn-secondary" onclick="openTab(4)">&#8592; Previous</button>
+          <button type="button" class="btn btn-primary" onclick="openTab(6)">Next &#8594;</button>
+        </div>
+      </div>
+
+      <!-- TAB 6: LOAN — collects loan amount + CIBIL -->
+      <div class="section" id="tab6">
+        <div class="section-title">Loan Details</div>
+        <label>Loan Type *</label>
+        <select id="loanTypeInput" required>
+          <option value="">Select loan type</option>
+          <option>Home</option><option>Car</option><option>Education</option>
+          <option>Business</option><option>Travel</option><option>Medical</option>
+          <option>Personal</option><option>Gold</option><option>Agriculture</option>
+        </select>
+
+        <label>Loan Amount Required (&#8377;) *</label>
+        <input type="number" id="loanInput" placeholder="e.g. 500000" min="0" required>
+        <small>Enter the total loan amount you need</small>
+
+        <label>Expected / Known CIBIL Score *</label>
+        <input type="number" id="cibilInput" placeholder="e.g. 720" min="300" max="900" required>
+        <small>300-500: Poor &nbsp;|&nbsp; 500-700: Average &nbsp;|&nbsp; 700+: Good</small>
+
+        <div class="nav-buttons">
+          <button type="button" class="btn btn-secondary" onclick="openTab(5)">&#8592; Previous</button>
+          <button type="button" class="btn btn-primary" onclick="openTab(7)">Next &#8594;</button>
+        </div>
+      </div>
+
+      <!-- TAB 7: DOCUMENTS -->
+      <div class="section" id="tab7">
+        <div class="section-title">Documents Upload</div>
+        <label>Aadhaar Card *</label><input type="file" accept=".pdf,.jpg,.png">
+        <label>PAN Card *</label><input type="file" accept=".pdf,.jpg,.png">
+        <label>Electricity / Water Bill *</label><input type="file" accept=".pdf,.jpg,.png">
+        <label>Passport Size Photo *</label><input type="file" accept=".jpg,.png">
+        <label>Signature (scanned) *</label><input type="file" accept=".jpg,.png">
+
+        <div class="nav-buttons">
+          <button type="button" class="btn btn-secondary" onclick="openTab(6)">&#8592; Previous</button>
+          <button type="button" class="btn btn-primary" onclick="openTab(8)">Next &#8594;</button>
+        </div>
+      </div>
+
+      <!-- TAB 8: BANK -->
+      <div class="section" id="tab8">
+        <div class="section-title">Bank Account Details</div>
+        <label>Do you have an SBI Account?</label>
+        <select id="sbiAccount" onchange="toggleBank()">
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
+        </select>
+
+        <div id="sbiBox" style="display:none;">
+          <label>SBI Account Number</label>
+          <input id="accountNumber" placeholder="11-digit account number">
+          <label>IFSC Code</label>
+          <input id="ifsc" placeholder="e.g. SBIN0001234">
+          <label>Upload Passbook (first page)</label>
+          <input type="file" accept=".pdf,.jpg,.png">
+        </div>
+
+        <div id="otherBankBox" style="display:none;">
+          <label>Your Bank Name</label>
+          <select>
+            <option>HDFC</option><option>ICICI</option><option>Axis</option>
+            <option>PNB</option><option>BOB</option><option>Kotak</option><option>Other</option>
+          </select>
+          <label>Upload Passbook (first page)</label>
+          <input type="file" accept=".pdf,.jpg,.png">
+        </div>
+
+        <div class="nav-buttons">
+          <button type="button" class="btn btn-secondary" onclick="openTab(7)">&#8592; Previous</button>
+          <button type="button" class="btn btn-success" onclick="submitLoanForm()">Submit Application &#10003;</button>
+        </div>
+      </div>
+
+    </form>
+  </div><!-- end form mainSection -->
+
+  <!-- ====== COMPLAINT SECTION ====== -->
+  <div id="complaint" class="mainSection">
+    <button class="btn btn-secondary back-btn" onclick="goBack()">&#8592; Back</button>
+    <div class="section-title">File a Complaint</div>
+    <div class="complaint-form">
+      <label>Username</label><input placeholder="Your username">
+      <label>Email</label><input type="email" placeholder="your@email.com">
+      <label>Complaint Details</label>
+      <textarea placeholder="Describe your issue..." rows="5" style="resize:vertical;"></textarea>
+      <label>Attachment (optional)</label>
+      <input type="file">
+      <br>
+      <button class="btn btn-primary" style="margin-top:12px;" onclick="alert('Complaint submitted!')">Submit Complaint</button>
+    </div>
+  </div>
+
+</div><!-- end container -->
+
+<!-- Success overlay -->
+<div class="submit-overlay" id="successOverlay">
+  <div class="submit-box">
+    <h3>&#10003; Application Submitted!</h3>
+    <p>Your loan application has been received and is now under review. You can track its status in your dashboard.</p>
+    <a href="/dashboard" style="background:#1a237e;color:white;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:700;">
+      Go to Dashboard &#8594;
+    </a>
+  </div>
+</div>
+
+<script>
+var currentTab = 0;
+
+function showSection(id) {
+  document.getElementById('options').style.display = 'none';
+  document.querySelectorAll('.mainSection').forEach(function(s) { s.style.display = 'none'; });
+  document.getElementById(id).style.display = 'block';
+  if (id === 'form') updateProgress(0);
+}
+
+function goBack() {
+  document.getElementById('options').style.display = 'block';
+  document.querySelectorAll('.mainSection').forEach(function(s) { s.style.display = 'none'; });
+}
+
+function openTab(i) {
+  var tabs     = document.querySelectorAll('.tab');
+  var sections = document.querySelectorAll('#loanForm .section');
+  tabs.forEach(function(t) { t.classList.remove('active'); });
+  sections.forEach(function(s) { s.classList.remove('active'); });
+  tabs[i].classList.add('active');
+  sections[i].classList.add('active');
+  currentTab = i;
+  updateProgress(i);
+}
+
+function updateProgress(i) {
+  for (var j = 0; j < 9; j++) {
+    var el = document.getElementById('ps' + j);
+    if (el) el.className = 'progress-step' + (j <= i ? ' done' : '');
+  }
+}
+
+function calcAge(el) {
+  var dob   = new Date(el.value);
+  var today = new Date();
+  var age   = today.getFullYear() - dob.getFullYear();
+  var m     = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+  document.getElementById('age').value = age > 0 ? age : '';
+}
+
+function toggleSpouse() {
+  document.getElementById('spouseBox').style.display =
+    document.getElementById('marital').value === 'Married' ? 'block' : 'none';
+}
+function toggleSpouseIncome() {
+  document.getElementById('spouseIncomeBox').style.display =
+    document.getElementById('spouseWorking').value === 'Yes' ? 'block' : 'none';
+}
+function toggleFather() {
+  document.getElementById('fatherIncomeBox').style.display =
+    document.getElementById('fatherWorking').value === 'Yes' ? 'block' : 'none';
+}
+function toggleMother() {
+  document.getElementById('motherIncomeBox').style.display =
+    document.getElementById('motherWorking').value === 'Yes' ? 'block' : 'none';
+}
+function toggleVehicle() {
+  document.getElementById('vehicleBox').style.display =
+    document.getElementById('ownVehicle').value === 'Yes' ? 'block' : 'none';
+}
+function toggleBrand() {
+  document.getElementById('otherBrand').style.display =
+    document.getElementById('vehicleBrand').value === 'Other' ? 'block' : 'none';
+}
+function toggleProperty() {
+  document.getElementById('propertyBox').style.display =
+    document.getElementById('ownProperty').value === 'Yes' ? 'block' : 'none';
+}
+function toggleBank() {
+  var val = document.getElementById('sbiAccount').value;
+  document.getElementById('sbiBox').style.display      = val === 'Yes' ? 'block' : 'none';
+  document.getElementById('otherBankBox').style.display = val === 'No'  ? 'block' : 'none';
+}
+
+// ================================================================
+// SUBMIT — validate key fields, populate hidden inputs, POST form
+// ================================================================
+function submitLoanForm() {
+  var income    = document.getElementById('incomeInput').value.trim();
+  var loan      = document.getElementById('loanInput').value.trim();
+  var cibil     = document.getElementById('cibilInput').value.trim();
+  var emp       = document.getElementById('employmentInput').value;
+  var ageVal    = document.getElementById('age').value.trim();
+
+  // Validate required financial fields
+  if (!income || parseFloat(income) <= 0) {
+    alert('Please enter your Monthly Income in the Financial tab.');
+    openTab(5);
+    return;
+  }
+  if (!loan || parseFloat(loan) <= 0) {
+    alert('Please enter the Loan Amount in the Loan tab.');
+    openTab(6);
+    return;
+  }
+  if (!cibil || parseInt(cibil) < 300 || parseInt(cibil) > 900) {
+    alert('Please enter a valid CIBIL score (300–900) in the Loan tab.');
+    openTab(6);
+    return;
+  }
+  if (!emp) {
+    alert('Please select your Employment Type in the Financial tab.');
+    openTab(5);
+    return;
+  }
+
+  // Populate hidden fields
+  document.getElementById('h_income').value         = income;
+  document.getElementById('h_loan').value           = loan;
+  document.getElementById('h_age').value            = ageVal || '0';
+  document.getElementById('h_employment_type').value = emp;
+  document.getElementById('h_credit_score').value   = cibil;
+
+  // Submit the form
+  document.getElementById('loanForm').submit();
+}
+</script>
+
+</body>
+</html>

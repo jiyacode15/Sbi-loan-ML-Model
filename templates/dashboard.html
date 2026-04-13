@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Applications - SBI Loan Portal</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #eef2f7, #f8fafc);
+    min-height: 100vh;
+}
+
+.navbar {
+    background: linear-gradient(135deg, #0f2b4f, #1a3a6b);
+    color: white;
+    padding: 16px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.navbar h2 { font-size: 20px; font-weight: 700; }
+.navbar a {
+    color: white;
+    margin-left: 18px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.9;
+    transition: opacity .2s;
+}
+.navbar a:hover { opacity: 1; }
+
+.page { width: 90%; max-width: 1100px; margin: 32px auto; }
+
+.page-title { font-size: 24px; color: #0f2b4f; margin-bottom: 24px; font-weight: 700; }
+
+.empty-state {
+    background: white;
+    border-radius: 16px;
+    padding: 60px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+.empty-state p { color: #64748b; font-size: 16px; margin-bottom: 20px; }
+.empty-state a {
+    background: #1a237e;
+    color: white;
+    padding: 12px 28px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.card {
+    background: white;
+    padding: 24px 28px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border-left: 5px solid #1a237e;
+    transition: transform .2s, box-shadow .2s;
+}
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #eef2f7;
+}
+.card-id { font-size: 15px; font-weight: 700; color: #1a237e; }
+.card-date { font-size: 12px; color: #94a3b8; }
+
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+.field { display: flex; flex-direction: column; gap: 3px; }
+.field-label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: .5px; font-weight: 600; }
+.field-value { font-size: 15px; font-weight: 600; color: #0f172a; }
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .3px;
+}
+.status-pending  { background: #fef9c3; color: #854d0e; border: 1px solid #fde68a; }
+.status-approved { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+.status-rejected { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+.status-under-review { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+
+.apply-btn {
+    display: inline-block;
+    background: #1a237e;
+    color: white;
+    padding: 13px 28px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 28px;
+    transition: background .2s;
+}
+.apply-btn:hover { background: #283593; }
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+  <h2>&#127974; SBI Loan Portal</h2>
+  <div>
+    <a href="/user-form">+ New Application</a>
+    <a href="/logout">Logout</a>
+  </div>
+</div>
+
+<div class="page">
+
+  <h2 class="page-title">&#128203; My Loan Applications</h2>
+
+  <a href="/user-form" class="apply-btn">+ Apply for New Loan</a>
+
+  {% if data %}
+
+    {% for row in data %}
+    <div class="card status-{{ row.status | default('pending') | lower | replace(' ', '-') }}">
+      <div class="card-header">
+        <span class="card-id">Application #{{ row.id }} &nbsp;|&nbsp; SBI-{{ 1000 + row.id }}</span>
+        <span class="card-date">Submitted: {{ row.submitted_on if row.submitted_on else 'N/A' }}</span>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <span class="field-label">Username</span>
+          <span class="field-value">{{ row.username }}</span>
+        </div>
+        <div class="field">
+          <span class="field-label">Monthly Income</span>
+          <span class="field-value">&#8377;<span class="field-value">₹{{ row.income | int }}</span></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Loan Amount</span>
+          <span class="field-value">&#8377;<span class="field-value">₹{{ row.loan | int }}</span></span>
+        </div>
+        <div class="field">
+          <span class="field-label">Age</span>
+          <span class="field-value">{{ row.age }} years</span>
+        </div>
+        <div class="field">
+          <span class="field-label">Employment Type</span>
+          <span class="field-value">{{ row.employment }}</span>
+        </div>
+        <div class="field">
+          <span class="field-label">CIBIL Score</span>
+          <span class="field-value">{{ row.credit_history }}</span>
+        </div>
+        <div class="field" style="grid-column: 1 / -1;">
+          <span class="field-label">Status</span>
+          <span class="status-badge status-{{ row.status | lower | replace(' ', '-') | trim }}">
+            {% if row.status == 'Approved' %}&#10003; {% elif row.status == 'Rejected' %}&#10007; {% elif row.status == 'Under Review' %}&#128336; {% else %}&#9679; {% endif %}
+            {{ row.status }}
+          </span>
+        </div>
+      </div>
+
+    </div>
+    {% endfor %}
+
+  {% else %}
+
+    <div class="empty-state">
+      <p>You have not submitted any loan applications yet.</p>
+      <a href="/user-form">Apply for a Loan Now</a>
+    </div>
+
+  {% endif %}
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SBI Loan Portal - Sign Up</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0d47a1, #1a237e);
+}
+
+/* FLOATING WARNING */
+.demo-banner {
+    position: sticky;
+    top: 0;
+    background: #ff9800;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+    z-index: 1000;
+}
+
+/* NAVBAR */
+.navbar {
+    background: #1a237e;
+    padding: 15px 40px;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    font-size: 24px;
+}
+
+.navbar-title {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.navbar a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+.btn-login {
+    background: #ff9800;
+    padding: 8px 16px;
+    border-radius: 5px;
+}
+
+/* MAIN */
+.container {
+    max-width: 900px;
+    margin: 50px auto;
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+}
+
+h2 {
+    color: #1a237e;
+}
+
+/* FORM */
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+small {
+    font-size: 12px;
+    color: #777;
+}
+
+.error {
+    color: red;
+    font-size: 12px;
+    display: none;
+}
+
+.success {
+    color: green;
+    font-size: 12px;
+    display: none;
+}
+
+.btn-main {
+    width: 100%;
+    background: #ff9800;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.btn-outline {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid #1a237e;
+    background: white;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.top-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.top-actions button {
+    background: #1a237e;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- FLOATING DEMO -->
+<div class="demo-banner">
+⚠️ This is a demo banking system for educational purposes only.
+</div>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="navbar-left">
+        <span class="logo-icon">🏦</span>
+        <span class="navbar-title">State Bank of India</span>
+    </div>
+
+    <div>
+        <a href="/">Home</a>
+        <a href="/signup" class="btn-login">Sign Up</a>
+        <a href="/login">Login</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="top-actions">
+        <button onclick="window.location.href='/'">⬅ Back</button>
+        <button onclick="window.location.href='/logout'">Logout</button>
+    </div>
+
+    <h2>Create Account</h2>
+
+    <form method="POST" action="/signup" onsubmit="return validateForm()">
+
+        <input type="text" name="fullname" placeholder="Full Name *" required>
+        <small>(As per Aadhaar Card / Birth Certificate)</small>
+
+        <input type="date" id="dob" name="dob" required onchange="calculateAge()">
+
+        <input type="number" id="age" name="age" placeholder="Age *" readonly required>
+
+        <select name="education" required>
+            <option value="">Education Qualification *</option>
+            <option>10th Pass</option>
+            <option>12th Pass</option>
+            <option>Graduate</option>
+            <option>Post Graduate</option>
+        </select>
+
+        <!-- USERNAME -->
+        <input type="text" id="username" name="username" placeholder="Username *" required>
+        <small>Only letters allowed (A-Z, a-z)</small>
+        <div id="usernameError" class="error">Invalid Username</div>
+        <div id="usernameSuccess" class="success">Valid Username</div>
+
+        <!-- EMAIL -->
+        <input type="email" id="email" name="email" placeholder="Email Address *" required>
+
+        <!-- PASSWORD -->
+        <input type="password" id="password" name="password" placeholder="Password *" required>
+        <small>Must include uppercase, lowercase & number</small>
+        <div id="passwordError" class="error">Weak Password</div>
+        <div id="passwordSuccess" class="success">Strong Password</div>
+
+        <input type="password" name="confirm_password" placeholder="Confirm Password *" required>
+
+        <button type="submit" class="btn-main">Register</button>
+
+    </form>
+
+    <button class="btn-outline" onclick="window.location.href='/login'">
+        Already have an account? Login
+    </button>
+
+</div>
+
+<script>
+
+/* AGE AUTO */
+function calculateAge() {
+    let dob = document.getElementById("dob").value;
+    let birthDate = new Date(dob);
+    let today = new Date();
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+    let m = today.getMonth() - birthDate.getMonth();
+
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    document.getElementById("age").value = age;
+}
+
+/* USERNAME LIVE */
+document.getElementById("username").addEventListener("input", function () {
+    let val = this.value;
+    let regex = /^[A-Za-z]+$/;
+
+    if (val === "") {
+        hide("username");
+    } else if (!regex.test(val)) {
+        showError("username");
+    } else {
+        showSuccess("username");
+    }
+});
+
+/* PASSWORD LIVE */
+document.getElementById("password").addEventListener("input", function () {
+    let val = this.value;
+    let regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+
+    if (val === "") {
+        hide("password");
+    } else if (!regex.test(val)) {
+        showError("password");
+    } else {
+        showSuccess("password");
+    }
+});
+
+/* HELPERS */
+function showError(field) {
+    document.getElementById(field + "Error").style.display = "block";
+    document.getElementById(field + "Success").style.display = "none";
+    document.getElementById(field).style.border = "2px solid red";
+}
+
+function showSuccess(field) {
+    document.getElementById(field + "Error").style.display = "none";
+    document.getElementById(field + "Success").style.display = "block";
+    document.getElementById(field).style.border = "2px solid green";
+}
+
+function hide(field) {
+    document.getElementById(field + "Error").style.display = "none";
+    document.getElementById(field + "Success").style.display = "none";
+    document.getElementById(field).style.border = "1px solid #ccc";
+}
+
+/* FINAL VALIDATION */
+function validateForm() {
+    let usernameValid = /^[A-Za-z]+$/.test(document.getElementById("username").value);
+    let passwordValid = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/.test(document.getElementById("password").value);
+
+    if (!usernameValid) {
+        alert("Username is invalid");
+        return false;
+    }
+
+    if (!passwordValid) {
+        alert("Password is invalid");
+        return false;
+    }
+
+    return true;
+}
+
+</script>
+
+</body>
+</html>
