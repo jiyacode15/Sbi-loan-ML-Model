@@ -1,0 +1,26 @@
+.card {
+    background: white;
+    padding: 24px 28px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border-left: 5px solid #1a237e;
+    transition: transform .2s, box-shadow .2s;
+}
+
+/* STATUS COLORS */
+.status-approved {
+    border-left-color: #22c55e;
+}
+
+.status-rejected {
+    border-left-color: #ef4444;
+}
+
+.status-under-review {
+    border-left-color: #3b82f6;
+}
+
+.status-pending {
+    border-left-color: #1a237e;
+}
