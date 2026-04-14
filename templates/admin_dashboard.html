@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard - SBI Loan Portal</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#eef2f7;min-height:100vh;}
+
+.navbar{
+  background:#1a237e;
+  color:white;
+  padding:14px 24px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.navbar h2{font-size:18px;font-weight:600;}
+.navbar a{color:white;margin-left:16px;text-decoration:none;font-size:14px;}
+
+.page{width:95%;max-width:1400px;margin:24px auto;}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{background:white;border-radius:10px;padding:18px 20px;border-left:4px solid #1a237e;}
+.stat-card .num{font-size:28px;font-weight:700;color:#1a237e;}
+.stat-card .lbl{font-size:13px;color:#666;margin-top:4px;}
+
+.card{background:white;border-radius:10px;padding:20px;margin-bottom:24px;}
+.card h3{font-size:16px;color:#1a237e;margin-bottom:16px;border-bottom:2px solid #eef2f7;padding-bottom:10px;}
+
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{background:#1a237e;color:white;padding:11px 12px;text-align:left;white-space:nowrap;}
+td{padding:10px 12px;border-bottom:1px solid #f0f0f0;vertical-align:middle;}
+tr:hover td{background:#f9fbff;}
+tr:last-child td{border-bottom:none;}
+
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge-pending{background:#fff3e0;color:#e65100;}
+.badge-approved{background:#e8f5e9;color:#2e7d32;}
+.badge-rejected{background:#ffebee;color:#c62828;}
+.badge-review{background:#e3f2fd;color:#1565c0;}
+
+.btn{display:inline-block;padding:5px 11px;border:none;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600;text-decoration:none;transition:opacity .2s;}
+.btn:hover{opacity:.85;}
+.btn-view{background:#673ab7;color:white;}
+.btn-check{background:#1976d2;color:white;}
+.btn-approve{background:#2e7d32;color:white;}
+.btn-reject{background:#c62828;color:white;}
+.btn-reset{background:#e65100;color:white;}
+.btn-sm{padding:4px 9px;font-size:11px;}
+
+.search-bar{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+.search-bar input,.search-bar select{
+  padding:8px 12px;border:1px solid #ccc;border-radius:6px;font-size:13px;
+}
+.search-bar input{flex:1;min-width:200px;}
+
+.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);z-index:1000;overflow-y:auto;}
+.overlay.open{display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;}
+.modal{background:white;border-radius:12px;width:100%;max-width:860px;padding:28px;position:relative;}
+.modal-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#555;}
+.modal h2{font-size:18px;color:#1a237e;margin-bottom:20px;}
+.modal-section{padding:16px;border:1px solid #eee;border-radius:8px;margin-bottom:12px;}
+.modal-section h4{font-size:13px;font-weight:700;color:#1a237e;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;}
+.field-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #f5f5f5;font-size:13px;}
+.field-row:last-child{border-bottom:none;}
+.field-key{color:#666;}
+.field-val{font-weight:600;color:#222;}
+
+.no-data{text-align:center;padding:40px;color:#999;font-size:14px;}
+.loading-row td{text-align:center;padding:40px;color:#1a237e;font-size:14px;}
+
+.toast{
+  position:fixed;bottom:24px;right:24px;background:#323232;color:white;
+  padding:12px 20px;border-radius:8px;font-size:13px;z-index:9999;
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <h2>&#127974; SBI Loan Admin Panel</h2>
+  <div>
+    <a href="/">Home</a>
+    <a href="/admin-logout">Logout</a>
+  </div>
+</div>
+
+<div class="page">
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="num" id="totalCount">-</div>
+      <div class="lbl">Total Applications</div>
+    </div>
+    <div class="stat-card" style="border-left-color:#2e7d32;">
+      <div class="num" style="color:#2e7d32;" id="approvedCount">-</div>
+      <div class="lbl">Approved</div>
+    </div>
+    <div class="stat-card" style="border-left-color:#e65100;">
+      <div class="num" style="color:#e65100;" id="pendingCount">-</div>
+      <div class="lbl">Pending / Under Review</div>
+    </div>
+    <div class="stat-card" style="border-left-color:#c62828;">
+      <div class="num" style="color:#c62828;" id="rejectedCount">-</div>
+      <div class="lbl">Rejected</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>&#128203; Loan Applications</h3>
+
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search by name, ID, username..." oninput="filterTable()">
+      <select id="statusFilter" onchange="filterTable()">
+        <option value="">All Status</option>
+        <option>Pending</option>
+        <option>Approved</option>
+        <option>Rejected</option>
+        <option>Under Review</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table id="appTable">
+        <thead>
+          <tr>
+            <th>App ID</th>
+            <th>Username</th>
+            <th>Full Name</th>
+            <th>Age</th>
+            <th>Employment</th>
+            <th>Loan Amount</th>
+            <th>Monthly Income</th>
+            <th>CIBIL Score</th>
+            <th>Status</th>
+            <th>Submitted On</th>
+            <th>View</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr class="loading-row"><td colspan="12">Loading applications from database...</td></tr>
+        </tbody>
+      </table>
+      <div id="noData" class="no-data" style="display:none;">No applications found.</div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="viewModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('viewModal')">&#10005;</button>
+    <h2 id="modalTitle">Application Details</h2>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var applications = [];
+
+// ============================================================
+// LOAD FROM BACKEND API
+// ============================================================
+function loadApplications() {
+  fetch('/api/applications')
+    .then(function(res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function(data) {
+      applications = data;
+      refreshAll();
+    })
+    .catch(function(err) {
+      document.getElementById('tableBody').innerHTML =
+        '<tr><td colspan="12" style="text-align:center;padding:30px;color:red;">Failed to load: ' + err.message + '</td></tr>';
+    });
+}
+
+// ============================================================
+// RENDER TABLE
+// ============================================================
+function renderTable(data) {
+  var tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+
+  if (data.length === 0) {
+    document.getElementById('noData').style.display = 'block';
+    return;
+  }
+  document.getElementById('noData').style.display = 'none';
+
+  data.forEach(function(app) {
+    var badgeClass = {
+      'Approved':     'badge-approved',
+      'Rejected':     'badge-rejected',
+      'Pending':      'badge-pending',
+      'Under Review': 'badge-review'
+    }[app.status] || 'badge-pending';
+
+    var tr = document.createElement('tr');
+    tr.id = 'row-' + app.id;
+    tr.innerHTML =
+      '<td><strong>' + esc(app.app_id) + '</strong></td>' +
+      '<td>' + esc(app.username) + '</td>' +
+      '<td>' + esc(app.fullName) + '</td>' +
+      '<td>' + app.age + '</td>' +
+      '<td>' + esc(app.employment) + '</td>' +
+      '<td>&#8377;' + Number(app.loanAmount).toLocaleString('en-IN') + '</td>' +
+      '<td>&#8377;' + Number(app.income).toLocaleString('en-IN') + '/mo</td>' +
+      '<td>' + app.cibil + '</td>' +
+      '<td id="status-' + app.id + '"><span class="badge ' + badgeClass + '">' + app.status + '</span></td>' +
+      '<td>' + (app.submittedOn || '&#8212;') + '</td>' +
+      '<td><button class="btn btn-view btn-sm" onclick="viewApplication(' + app.id + ')">View</button></td>' +
+      '<td>' +
+        '<button class="btn btn-check btn-sm"   onclick="checkEligibility(' + app.id + ')">Check</button> ' +
+        '<button class="btn btn-approve btn-sm" onclick="updateStatus(' + app.id + ',\'Approved\')">Approve</button> ' +
+        '<button class="btn btn-reject btn-sm"  onclick="updateStatus(' + app.id + ',\'Rejected\')">Reject</button> ' +
+        '<button class="btn btn-reset btn-sm"   onclick="updateStatus(' + app.id + ',\'Pending\')">Reset</button>' +
+      '</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+// ============================================================
+// UPDATE STATUS — live DB update + DOM badge refresh
+// ============================================================
+function updateStatus(id, status) {
+  fetch('/api/update-status', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: id, status: status })
+  })
+  .then(function(res) {
+    if (!res.ok) throw new Error('Update failed');
+    return res.json();
+  })
+  .then(function() {
+    var app = applications.find(function(a) { return a.id === id; });
+    if (app) app.status = status;
+
+    var badgeClass = {
+      'Approved':     'badge-approved',
+      'Rejected':     'badge-rejected',
+      'Pending':      'badge-pending',
+      'Under Review': 'badge-review'
+    }[status] || 'badge-pending';
+
+    var cell = document.getElementById('status-' + id);
+    if (cell) cell.innerHTML = '<span class="badge ' + badgeClass + '">' + status + '</span>';
+
+    updateStats();
+    showToast('Status updated to: ' + status);
+  })
+  .catch(function(err) {
+    showToast('Error: ' + err.message);
+  });
+}
+
+// ============================================================
+// VIEW FULL APPLICATION MODAL
+// ============================================================
+function viewApplication(id) {
+  var app = applications.find(function(a) { return a.id === id; });
+  if (!app) return;
+
+  document.getElementById('modalTitle').textContent =
+    'Application: ' + app.app_id + ' \u2014 ' + app.fullName;
+
+  var sections = [
+    {
+      title: 'Applicant Identity',
+      fields: [
+        ['App ID',          app.app_id],
+        ['Username',        app.username],
+        ['Full Name',       app.fullName],
+        ['Date of Birth',   app.dob || '\u2014'],
+        ['Age',             app.age + ' years'],
+        ['Email',           app.email || '\u2014'],
+        ['Education',       app.education || '\u2014']
+      ]
+    },
+    {
+      title: 'Financial Details',
+      fields: [
+        ['Monthly Income',  '\u20b9' + Number(app.income).toLocaleString('en-IN')],
+        ['Income Range',    app.incomeRange],
+        ['Loan Amount',     '\u20b9' + Number(app.loanAmount).toLocaleString('en-IN')],
+        ['Employment Type', app.employment],
+        ['CIBIL Score',     app.cibil]
+      ]
+    },
+    {
+      title: 'Application Status',
+      fields: [
+        ['Current Status',  app.status],
+        ['Submitted On',    app.submittedOn || '\u2014']
+      ]
+    }
+  ];
+
+  var html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">';
+  sections.forEach(function(sec) {
+    html += '<div class="modal-section"><h4>' + esc(sec.title) + '</h4>';
+    sec.fields.forEach(function(pair) {
+      html += '<div class="field-row">' +
+        '<span class="field-key">' + esc(pair[0]) + '</span>' +
+        '<span class="field-val">' + esc(String(pair[1])) + '</span>' +
+        '</div>';
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+
+  html += '<div style="margin-top:16px;text-align:right;">' +
+    '<button class="btn btn-check" onclick="closeModal(\'viewModal\');checkEligibility(' + id + ')">' +
+    '&#9889; Run Eligibility Check' +
+    '</button></div>';
+
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('viewModal').classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// ============================================================
+// CHECK ELIGIBILITY — navigate to /result with query params
+// ============================================================
+function checkEligibility(id) {
+  var app = applications.find(function(a) { return a.id === id; });
+  if (!app) return;
+
+  var params = new URLSearchParams({
+    id:          app.app_id,
+    name:        app.fullName,
+    age:         app.age,
+    income:      app.income,
+    incomeRange: app.incomeRange,
+    loan:        app.loanAmount,
+    loanType:    app.employment,
+    cibil:       app.cibil,
+    employment:  app.employment,
+    education:   app.education || '',
+    status:      app.status,
+    username:    app.username
+  });
+
+  window.location.href = '/result?' + params.toString();
+}
+
+// ============================================================
+// FILTER
+// ============================================================
+function filterTable() {
+  var search = document.getElementById('searchInput').value.toLowerCase();
+  var status = document.getElementById('statusFilter').value;
+
+  var filtered = applications.filter(function(app) {
+    var matchSearch =
+      (app.fullName || '').toLowerCase().includes(search) ||
+      (app.app_id   || '').toLowerCase().includes(search) ||
+      (app.username || '').toLowerCase().includes(search);
+    var matchStatus = !status || app.status === status;
+    return matchSearch && matchStatus;
+  });
+
+  renderTable(filtered);
+}
+
+// ============================================================
+// STATS
+// ============================================================
+function updateStats() {
+  document.getElementById('totalCount').textContent    = applications.length;
+  document.getElementById('approvedCount').textContent = applications.filter(function(a) { return a.status === 'Approved'; }).length;
+  document.getElementById('pendingCount').textContent  = applications.filter(function(a) { return a.status === 'Pending' || a.status === 'Under Review'; }).length;
+  document.getElementById('rejectedCount').textContent = applications.filter(function(a) { return a.status === 'Rejected'; }).length;
+}
+
+function refreshAll() {
+  updateStats();
+  filterTable();
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
+
+// ============================================================
+// HTML ESCAPE
+// ============================================================
+function esc(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// Close modal on overlay click
+document.getElementById('viewModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal('viewModal');
+});
+
+// Boot
+loadApplications();
+</script>
+
+</body>
+</html>

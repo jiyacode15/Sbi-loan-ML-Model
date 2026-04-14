@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Login</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #1a237e, #0d47a1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    width: 350px;
+    text-align: center;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #1a237e;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Admin Login</h2>
+
+<!-- ✅ CRITICAL FIX -->
+<form method="POST" action="/admin">
+
+    <input name="username" required placeholder="Enter Username">
+    <input name="password" type="password" required placeholder="Enter Password">
+
+    <!-- ✅ MUST BE SUBMIT -->
+    <button type="submit">Login</button>
+
+</form>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Application Details</title>
+
+<style>
+body {
+    font-family: 'Segoe UI';
+    background: #f4f6f9;
+}
+
+.container {
+    width: 60%;
+    margin: auto;
+    margin-top: 40px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+h2 {
+    color: #1a237e;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+.label {
+    color: #555;
+}
+
+.value {
+    font-weight: bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<div class="card">
+
+<h2>📄 Application Details</h2>
+
+<div class="row">
+<span class="label">Application ID</span>
+<span class="value">{{ data[0] }}</span>
+</div>
+
+<div class="row">
+<span class="label">Username</span>
+<span class="value">{{ data[6] }}</span>
+</div>
+
+<div class="row">
+<span class="label">Income</span>
+<span class="value">₹{{ data[1] }}</span>
+</div>
+
+<div class="row">
+<span class="label">Loan Amount</span>
+<span class="value">₹{{ data[2] }}</span>
+</div>
+
+<div class="row">
+<span class="label">Age</span>
+<span class="value">{{ data[3] }}</span>
+</div>
+
+<div class="row">
+<span class="label">Employment</span>
+<span class="value">{{ data[4] }}</span>
+</div>
+
+<div class="row">
+<span class="label">Credit Score</span>
+<span class="value">{{ data[5] }}</span>
+</div>
+
+<div class="row">
+<span class="label">Status</span>
+<span class="value">{{ data[7] }}</span>
+</div>
+
+<br>
+
+<a href="/admin-dashboard">
+<button style="padding:10px; background:#1a237e; color:white; border:none;">
+← Back to Admin
+</button>
+</a>
+
+</div>
+</div>
+
+</body>
+</html>
